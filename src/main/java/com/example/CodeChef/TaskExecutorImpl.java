@@ -42,9 +42,17 @@ public class TaskExecutorImpl implements Main.TaskExecutor {
                     }
                 }
             });
-
-            //Need to do the processing task
+            processTaskQueue();
         }
         return futureTask;
+    }
+
+    private void processTaskQueue() {
+        while (!queue.isEmpty() && ((ThreadPoolExecutor) executorService).getActiveCount() < maxConcurrentTasks) {
+            Runnable nextTask = queue.peek();
+            if (nextTask != null) {
+                executorService.submit(nextTask);
+            }
+        }
     }
 }
